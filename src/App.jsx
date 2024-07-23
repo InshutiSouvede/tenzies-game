@@ -9,6 +9,8 @@ import Confetti from 'react-confetti'
 function App() {
   const [seconds, setSeconds] = useState(0)
   const [minutes, setMinutes] = useState(0)
+  const [runEffect, setRunEffect] = useState(false)
+
 
   const [tenzies, setTenzies] = useState(false)
   const [dice, setDice] = useState(() => newDice())
@@ -29,7 +31,10 @@ function App() {
   function roll() {
 
     if (tenzies) {
-      clearInterval(intervalId)
+console.log("interval ID",intervalId)
+
+      setSeconds(0)
+      setMinutes(0)
       setDice(() => newDice())
       setTenzies(false)
 
@@ -57,37 +62,31 @@ function App() {
  
   
   useEffect(() => {
-    function startTimer() {
-      
-      intervalId = setInterval(() => {
-        setSeconds(prev=>{
-          return prev+1
-        })
-        
-      }, 1000)
-    }
-    startTimer()
+    let localSeconds = 0;
+    let localMinutes = 0;
 
-    return function stopTimer() {
-      clearInterval(intervalId)
-    }
+    intervalId = setInterval(() => {
+      localSeconds += 1;
+      if (localSeconds === 60) {
+        localMinutes += 1;
+        localSeconds = 0;
 
-  }, [])
-  useEffect(()=>{
-    console.log('hello')
-    if(seconds===59){
-      console.log("Adding minut",seconds)
-      setMinutes((min)=>min+1)
-      setSeconds(0)
-    }
-  },[seconds===59])
+        // Update the state only when the minute changes
+        setMinutes(localMinutes);
+        setSeconds(localSeconds);
+      } else {
+        // Update only the seconds state to avoid unnecessary re-renders
+        setSeconds(localSeconds);
+      }
+    }, 1000);
+
+    return () => clearInterval(intervalId); // Clean up the interval on component unmount
+  }, []);
+
   useEffect(() => {
-    if(seconds==0&&minutes==0){
-      setSeconds(1)
-    }
-    console.log("seconds", seconds)
     const el1 = dice[0]
     if (dice.every((el) => el.isHeld && el.value == el1.value)) {
+      // clearInterval(intervalId)
       setTenzies(true)
     }
   }, [dice])
