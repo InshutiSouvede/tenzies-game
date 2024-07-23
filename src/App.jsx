@@ -58,21 +58,29 @@ function App() {
   
   useEffect(() => {
     function startTimer() {
+      
       intervalId = setInterval(() => {
         setSeconds(prev=>{
-          if(prev===59){
-            setMinutes((min)=>min+1)
-          }
-          return prev>=59?0:prev+1
+          return prev+1
         })
         
-      }, 2000)
+      }, 1000)
     }
     startTimer()
+
+    return function stopTimer() {
+      clearInterval(intervalId)
+    }
+
   }, [])
-  function stopTimer() {
-    clearInterval(intervalId)
-  }
+  useEffect(()=>{
+    console.log('hello')
+    if(seconds===59){
+      console.log("Adding minut",seconds)
+      setMinutes((min)=>min+1)
+      setSeconds(0)
+    }
+  },[seconds===59])
   useEffect(() => {
     if(seconds==0&&minutes==0){
       setSeconds(1)
@@ -86,7 +94,7 @@ function App() {
   return (
     <div className='w-96 h-[24rem] m-auto my-40 bg-[#0B2434] px-8 pb-8' >
       {tenzies && <Confetti />}
-      <h1 className='text-white text-2xl text-right py-1 font-bold'>{`${minutes < 10 ? '0' + minutes : minutes} : ${seconds < 10 ? '0' + seconds : seconds}`}</h1>
+       <h1 className='text-white text-2xl text-right py-1 font-bold'>{`${minutes < 10 ? '0' + minutes : minutes} : ${seconds < 10 ? '0' + seconds : seconds}`}</h1>
       <div className='bg-[#F5F5F5] rounded-md w-80 h-80 relative p-5 flex flex-col justify-center items-center gap-5'>
         <h1 className='text-center font-bold text-3xl' >Tenzies</h1>
         <p className='text-center text-[0.85rem]'>Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</p>
