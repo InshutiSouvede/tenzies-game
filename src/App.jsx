@@ -9,9 +9,8 @@ import Confetti from 'react-confetti'
 function App() {
   const [seconds, setSeconds] = useState(0)
   const [minutes, setMinutes] = useState(0)
-  const [runEffect, setRunEffect] = useState(false)
-
-
+  
+  const [restartTimer,setRestartTimer] = useState(false)
   const [tenzies, setTenzies] = useState(false)
   const [dice, setDice] = useState(() => newDice())
   let intervalId;
@@ -25,21 +24,20 @@ function App() {
         id: nanoid()
       })
     }
+    setSeconds(0)
+    setMinutes(0)
     // startTimer()
     return numsArr
   }
   function roll() {
-
     if (tenzies) {
-console.log("interval ID",intervalId)
-
-      setSeconds(0)
-      setMinutes(0)
+      setRestartTimer(true)
       setDice(() => newDice())
       setTenzies(false)
 
     }
     else {
+      setRestartTimer(false)
       setDice(prev => {
         return prev.map((el) => {
           if (el.isHeld) {
@@ -67,6 +65,9 @@ console.log("interval ID",intervalId)
 
     intervalId = setInterval(() => {
       localSeconds += 1;
+      if(tenzies){
+
+      }else
       if (localSeconds === 60) {
         localMinutes += 1;
         localSeconds = 0;
@@ -81,7 +82,7 @@ console.log("interval ID",intervalId)
     }, 1000);
 
     return () => clearInterval(intervalId); // Clean up the interval on component unmount
-  }, []);
+  }, [tenzies&&dice,tenzies]);
 
   useEffect(() => {
     const el1 = dice[0]
